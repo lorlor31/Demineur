@@ -1,0 +1,102 @@
+*{
+    margin :0px ;
+    padding: 0px;
+    /* box-sizing: border-box; */
+}
+#boards-wrap{
+    position: relative;
+}
+#board{
+    position: absolute;
+    display: block;
+    background-color: rgba(10, 234, 234, 0);
+    /* background transparent */
+    border : solid 4px rgb(104, 99, 99) ;
+    border-radius : 15px ;
+    width: 250px;
+    height: 250px;
+    opacity: 100%; 
+    /* opacity à remettre à 100%une fois les calculs finis */
+    z-index: 22;
+    visibility: visible;
+}
+
+#boardBack{
+    position: absolute;
+    display: block;
+    background-color: rgb(210, 220, 19);
+    border : solid 4px rgb(104, 99, 99) ;
+    border-radius : 15px ;
+    width: 250px;
+    height: 250px;
+    z-index: 13;
+}
+
+.cell{
+    z-index: 200;
+    float : left ;
+    width :50px ;
+    height :50px ;
+    background-image: radial-gradient(farthest-corner at 5px 5px, grey, black);
+    border: solid black 2px ;
+    border-radius: 5px ;
+    box-sizing: border-box;
+    visibility: visible;
+    opacity : 100% ;
+}
+
+.hidden{
+    visibility: hidden;
+}
+
+.cellBackground{
+    visibility: visible;
+    float : left ;
+    width :50px ;
+    height :50px ;
+    background-color :blue ;
+    border: solid black 2px ;
+    border-radius: 5px ;
+    box-sizing: border-box;
+    z-index: 15;
+    text-align: center;
+}
+
+.bomb{
+    background-image: url("bomb.png");
+    background-size: contain;
+    width :50px ;
+    height :50px ;
+    color :blueviolet ;
+}
+
+.un{
+    background-image: url("un.png");
+    background-size: contain;
+    width :50px ;
+    height :50px ;
+    color :blueviolet ;
+}
+.deux{
+    background-image: url("deux.png");
+    background-size: contain;
+    width :50px ;
+    height :50px ;
+    color :blueviolet ;
+}
+
+.trois{
+    background-image: url("trois.jpg");
+    background-size: contain;
+    width :50px ;
+    height :50px ;
+    color :blueviolet ;
+}
+
+.quatre{
+    background-image: url("quatre.eps");
+    background-size: contain;
+    width :50px ;
+    height :50px ;
+    color :blueviolet ;
+}

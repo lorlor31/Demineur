@@ -2,6 +2,7 @@
 
 let board=document.getElementById("board")
 let boardBack=document.getElementById("boardBack")
+let cells=document.getElementsByClassName("cell")
 let boardGrid=[]
 let boardGridBack=[]
 let nbOfCols=5
@@ -72,7 +73,8 @@ function calcAndDisplayOfNeighbours(coordonnees){
     if (minesToStr.includes(coordonnees.toString())==true) {
         mainCellToHide.classList.add("hidden") 
         mainCellToCalc.style.backgroundColor="red"
-        board.style.opacity="O%"///pquoi ça marche pas ??
+        Array.from(cells).forEach((cell)=>cell.style.opacity="0%")
+        board.style.opacity="O%"///pquoi ça marche pas ?? 
         mainCellToCalc.classList.add("bomb")
         alert("perdu")
     }
@@ -82,33 +84,62 @@ function calcAndDisplayOfNeighbours(coordonnees){
         neighbours.forEach((neighbor)=>{
             if(minesToStr.includes(neighbor.toString())==true) {
                 countOfMinesAroundMainCell++ ;
-                console.log("countOfMinesAroundMainCell",countOfMinesAroundMainCell)
             }
         })
         let classNumMainCell=null
-        //Fonction pour trouver la class à affocher selon le nb de mine de la case
-                    function chooseClassNum(htmlClass,countOfMines){
-                        switch (countOfMines) {
-                            case 1:
-                                htmlClass="un"
-                            break;
-                            case 2:
-                                htmlClass="deux"    
-                            break;
-                            case 3:
-                                htmlClass="trois"    
-                            break;
-                            case 4:
-                                htmlClass="quatre"    
-                            break;
-                            default:
-                        }   
-                    
-                    }
-                    chooseClassNum(classNumMainCell,countOfMinesAroundMainCell)
-                    
-                    mainCellToCalc.classList.add(classNumMainCell)
+        let prout=2
+        //Fonction pour trouver la class à afficher selon le nb de mine de la case
+        //marche pas ?? ca marche en dehors de la fct ms sinon ca me renvoi null 
+        // function chooseClassNum(countOfMines='' ,htmlClass=''){
+        //     switch (countOfMines) {
+        //         case 1:
+        //             htmlClass="un"
+        //         break;
+        //         case 2:
+        //             htmlClass="deux"   
+        //             console.log("dfsez",countOfMines) 
+        //         break;
+        //         case 3:
+        //             htmlClass="trois"    
+        //         break;
+        //         case 4:
+        //             htmlClass="quatre"    
+        //         break;
+        //         default:
+        //     }  
+        // }
+        // ()=>chooseClassNum(prout,classNumMainCell)
+        
+        //ça ça fctne
+        // switch (countOfMinesAroundMainCell) {
+        //             case 1:
+        //                 classNumMainCell="un"
+        //             break;
+        //             case 2:
+        //                 classNumMainCell="deux"    
+        //             break;
+        //             case 3:
+        //                 classNumMainCell="trois"    
+        //             break;
+        //             case 4:
+        //                 classNumMainCell="quatre"    
+        //             break;
+        //             default:
+        //         }   
+
+        let obj={
+            1:"un",
+            2:"deux",
+            3:"trois",
+            4:"quatre,"
+        }
+
+        classNumMainCell=obj[countOfMinesAroundMainCell]
+        mainCellToCalc.classList.add(classNumMainCell)
         mainCellToHide.classList.add("hidden")
+        boardGridWithVisibility[coordonnees]=="visible"
+
+        console.log("mainCellCoord",mainCellCoord)
         // Calculer les chiffres crrspdt aux nb de mines autour de chq voisin 
             neighbours.forEach((neighbor)=>{
                 let neighboursOfNeighbor=calcNeighbours(neighbor)
@@ -121,24 +152,17 @@ function calcAndDisplayOfNeighbours(coordonnees){
                     let neighborToCalc=document.querySelector(`#${neighbor.join().replace(',','-')}-back`)
                         //Switcher selon le nb de mines
                     let classNum=null
-                    switch (count) {
-                        case 1:
-                        classNum="un"
-                        break;
-                        case 2:
-                        classNum="deux"    
-                        break;
-                        case 3:
-                        classNum="trois"    
-                        break;
-                        case 4:
-                        classNum="quatre"    
-                        break;
-                        default:
-                    }   
+                    classNum=obj[count]
                     if(minesToStr.includes(neighbor.toString())==false){
                         neighborToCalc.classList.add(classNum)
                         neighborToHide.classList.add("hidden")
+                        console.log(neighbor.join())
+                        boardGridWithVisibility[neighbor.join()]="hidden"
+                        //A,1
+                        //[    "B",    2]//
+                        console.log("brddgridvis",boardGridWithVisibility)
+
+
                     }
                 })
             })
@@ -148,14 +172,19 @@ function calcAndDisplayOfNeighbours(coordonnees){
             neighbours.forEach((neighbor)=>{
                 let neighborToHide=document.querySelector(`#${neighbor.join().replace(',','-')}`)
                 neighborToHide.classList.add("hidden")
+                boardGridWithVisibility[neighbor.join()]="hidden"
             })
         }
     }
+    evalVictory()
 }
 
 //Générer le board en html
 boardGrid.forEach((coordonnees)=>{
     let cell=document.createElement("img")
+    let pictureOfCell="hamb.png"
+    let flagIsPlaced=false
+    let questionMarkIsPlaced=false
     cell.setAttribute("class","cell")
     cell.setAttribute("id",coordonnees.join().replace(',','-'))// need to replace ',' with '-' to have a valid ID
     cell.setAttribute("src","hamb.png")
@@ -163,24 +192,39 @@ boardGrid.forEach((coordonnees)=>{
         cell.setAttribute("src","sous-le-choc.png")        
     })
     cell.addEventListener("mouseup",()=>{
-        cell.setAttribute("src","hamb.png") ;
+        cell.setAttribute("src",pictureOfCell) ;
     })
     cell.addEventListener("mouseover",()=>{
         cell.setAttribute("src","sourire.png")
     })
     cell.addEventListener("mouseout",()=>{
-        cell.setAttribute("src","hamb.png") ;
+        cell.setAttribute("src",pictureOfCell) ;
     })
     cell.addEventListener("click",()=>{
         calcAndDisplayOfNeighbours(coordonnees)})
-    //ce qui se passe quand on relache le bouton de la souris, les cases voisines se dévoilent
-    
-    
+    cell.addEventListener("contextmenu",(e)=>{
+            e.preventDefault()
+        if (flagIsPlaced==false) {
+            cell.setAttribute("src","flag.png") ;
+            flagIsPlaced=true
+            questionMarkIsPlaced=false
+            pictureOfCell="flag.png"
+        }
+        else if (flagIsPlaced==true && questionMarkIsPlaced==false){
+            questionMarkIsPlaced=true
+            cell.setAttribute("src","help.png") ;
+            pictureOfCell="help.png"
+        }
+        else{
+            questionMarkIsPlaced=false
+            flagIsPlaced=false
+            cell.setAttribute("src","hamb.png") ;
+            pictureOfCell="hamb.png"
+        }
+    })    
     board.appendChild(cell)
 })
-
-
-
+ 
 //Génerer la grille 
 boardGridBack.forEach((coordonnees)=>{
     //générer l'html
@@ -196,4 +240,17 @@ boardGridBack.forEach((coordonnees)=>{
         cellCss.classList.add("bomb")}
 
 })
+
+//Tester la victoire : si le nb de cellules hidden==nb de mines et toutes les cells sont hidden sauf les mines 
+    // if ()
+    let boardGridWithVisibility={}
+    boardGrid.forEach((cell)=>(boardGridWithVisibility[cell] ="visible"))
+    
+    function evalVictory(){
+        let arrFromBoardGridVis
+        arrFromBoardGridVis=Object.entries(boardGridWithVisibility)
+        let countOfVisible=arrFromBoardGridVis.filter((item)=>(item[1]=="visible")).length
+        console.log(countOfVisible)
+    }
+    
 

@@ -6,6 +6,7 @@ let cells=document.getElementsByClassName("cell")
 let boardGrid=[]
 let boardGridBack=[]
 let nbOfCols=5
+let nbOfMines=5
 let nbOfCells=Math.pow(nbOfCols,2)
 let boardCol=["A","B","C","D","E"]
 
@@ -37,7 +38,7 @@ boardGridBack=boardGrid.map(item=>(item)) //copier le boardgrid pour avoir la m�
 //Faire une deep copie et mélanger boardGridBack
 let boardGridBackShuffled=[...boardGridBack]
 shuffle(boardGridBackShuffled)
-let mines=boardGridBackShuffled.slice(0,nbOfCols)
+let mines=boardGridBackShuffled.slice(0,nbOfMines)
 
 //Calcul des cases voisines et filtre des cas limites
 function calcAndDisplayOfNeighbours(coordonnees){
@@ -72,6 +73,7 @@ function calcAndDisplayOfNeighbours(coordonnees){
     //Si la case cliquée contient une mine
     if (minesToStr.includes(coordonnees.toString())==true) {
         mainCellToHide.classList.add("hidden") 
+        boardGridWithVisibility[coordonnees]=="hidden"
         mainCellToCalc.style.backgroundColor="red"
         Array.from(cells).forEach((cell)=>cell.style.opacity="0%")
         board.style.opacity="O%"///pquoi ça marche pas ?? 
@@ -87,59 +89,16 @@ function calcAndDisplayOfNeighbours(coordonnees){
             }
         })
         let classNumMainCell=null
-        let prout=2
-        //Fonction pour trouver la class à afficher selon le nb de mine de la case
-        //marche pas ?? ca marche en dehors de la fct ms sinon ca me renvoi null 
-        // function chooseClassNum(countOfMines='' ,htmlClass=''){
-        //     switch (countOfMines) {
-        //         case 1:
-        //             htmlClass="un"
-        //         break;
-        //         case 2:
-        //             htmlClass="deux"   
-        //             console.log("dfsez",countOfMines) 
-        //         break;
-        //         case 3:
-        //             htmlClass="trois"    
-        //         break;
-        //         case 4:
-        //             htmlClass="quatre"    
-        //         break;
-        //         default:
-        //     }  
-        // }
-        // ()=>chooseClassNum(prout,classNumMainCell)
-        
-        //ça ça fctne
-        // switch (countOfMinesAroundMainCell) {
-        //             case 1:
-        //                 classNumMainCell="un"
-        //             break;
-        //             case 2:
-        //                 classNumMainCell="deux"    
-        //             break;
-        //             case 3:
-        //                 classNumMainCell="trois"    
-        //             break;
-        //             case 4:
-        //                 classNumMainCell="quatre"    
-        //             break;
-        //             default:
-        //         }   
-
         let obj={
             1:"un",
             2:"deux",
             3:"trois",
             4:"quatre,"
         }
-
         classNumMainCell=obj[countOfMinesAroundMainCell]
         mainCellToCalc.classList.add(classNumMainCell)
         mainCellToHide.classList.add("hidden")
-        boardGridWithVisibility[coordonnees]=="visible"
-
-        console.log("mainCellCoord",mainCellCoord)
+        boardGridWithVisibility[coordonnees.join()]="hidden"
         // Calculer les chiffres crrspdt aux nb de mines autour de chq voisin 
             neighbours.forEach((neighbor)=>{
                 let neighboursOfNeighbor=calcNeighbours(neighbor)
@@ -156,13 +115,7 @@ function calcAndDisplayOfNeighbours(coordonnees){
                     if(minesToStr.includes(neighbor.toString())==false){
                         neighborToCalc.classList.add(classNum)
                         neighborToHide.classList.add("hidden")
-                        console.log(neighbor.join())
                         boardGridWithVisibility[neighbor.join()]="hidden"
-                        //A,1
-                        //[    "B",    2]//
-                        console.log("brddgridvis",boardGridWithVisibility)
-
-
                     }
                 })
             })
@@ -242,15 +195,21 @@ boardGridBack.forEach((coordonnees)=>{
 })
 
 //Tester la victoire : si le nb de cellules hidden==nb de mines et toutes les cells sont hidden sauf les mines 
-    // if ()
+    // 
     let boardGridWithVisibility={}
     boardGrid.forEach((cell)=>(boardGridWithVisibility[cell] ="visible"))
-    
+    let minesToStr=mines.map((item)=>(item.join())).sort()
     function evalVictory(){
         let arrFromBoardGridVis
         arrFromBoardGridVis=Object.entries(boardGridWithVisibility)
-        let countOfVisible=arrFromBoardGridVis.filter((item)=>(item[1]=="visible")).length
-        console.log(countOfVisible)
+        let arrOfVisible=arrFromBoardGridVis.filter((item)=>(item[1]=="visible")).map((item)=>(item[0]))
+            console.log("arrofvis",arrOfVisible)
+            console.log("mines",minesToStr)
+        if (arrOfVisible.length==nbOfMines){
+          arrOfVisible.every((item,index)=>(item==minesToStr[index]))==true 
+          ? alert ("gagné!")
+          : alert ("y a qqch qui bug!")
+        }
     }
-    
+
 
